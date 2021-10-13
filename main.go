@@ -30,7 +30,8 @@ func main() {
 			log.Fatal(err)
 		}
 		defer db.Close()
-		ipnya := net.ParseIP("182.253.132.34")
+		getClientIP := c.IP()
+		ipnya := net.ParseIP(getClientIP)
 		record, err := db.City(ipnya)
 		if err != nil {
 			log.Fatal(err)
