@@ -36,7 +36,8 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("%v", record)
+		//buat test di console
+		//fmt.Printf("%v", record)
 
 		locationfull := fmt.Sprintf("%v,%v", record.Location.Latitude, record.Location.Longitude)
 		ambilIP := fmt.Sprintf("%v", ipnya)
