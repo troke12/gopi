@@ -23,36 +23,45 @@ type IPstruct struct {
 
 func main() {
 	app := fiber.New()
+	//Get the DB
+	db, err := geoip2.Open("data/GeoIP2-City.mmdb")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
+	// Routes
 	app.Get("/", func(c *fiber.Ctx) error {
-		db, err := geoip2.Open("data/GeoIP2-City.mmdb")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer db.Close()
 		getClientIP := c.IP()
-		ipnya := net.ParseIP(getClientIP)
-		record, err := db.City(ipnya)
+		ip := net.ParseIP(getClientIP)
+		record, err := db.City(ip)
 		if err != nil {
 			log.Fatal(err)
 		}
 		//buat test di console
 		//fmt.Printf("%v", record)
 
-		locationfull := fmt.Sprintf("%v,%v", record.Location.Latitude, record.Location.Longitude)
-		ambilIP := fmt.Sprintf("%v", ipnya)
 		dataIP := IPstruct{
-			IP:            ambilIP,
+			IP:            fmt.Sprintf("%v", ip),
 			City:          record.City.Names["en"],
 			Region:        record.City.Names["en"],
 			Country:       record.Country.IsoCode,
 			CountryFull:   record.Country.Names["en"],
 			Continent:     record.Continent.Code,
 			ContinentFull: record.Continent.Names["en"],
-			Loc:           locationfull,
+			Loc:           fmt.Sprintf("%v,%v", record.Location.Latitude, record.Location.Longitude),
 			Postal:        record.Postal.Code,
 		}
 		return c.JSON(dataIP)
+	})
+
+	app.Get("/:ip/country", func(c *fiber.Ctx) error {
+		ip := net.ParseIP(c.Params("ip"))
+		record, err := db.Country(ip)
+		if err != nil {
+			c.SendString("Error!")
+		}
+		return c.SendString(record.Country.IsoCode)
 	})
 
 	log.Fatal(app.Listen(":3000"))
