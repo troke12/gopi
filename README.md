@@ -13,6 +13,11 @@ tar -zxvf geoip.tar.gz
 mv geoip.tar.gz data
 ```
 
+# Routes
+- `/` - get your current information
+- `/8.8.8.8/country` - get the country iso code
+- `/8.8.8.8` - get the information another ip
+
 # Result
 
 ```json

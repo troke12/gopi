@@ -36,7 +36,10 @@ func main() {
 		ip := net.ParseIP(getClientIP)
 		record, err := db.City(ip)
 		if err != nil {
-			log.Fatal(err)
+			//log.Fatalf("error: %v", err)
+			return c.JSON(fiber.Map{
+				"status": "err",
+			})
 		}
 		//buat test di console
 		//fmt.Printf("%v", record)
@@ -59,9 +62,35 @@ func main() {
 		ip := net.ParseIP(c.Params("ip"))
 		record, err := db.Country(ip)
 		if err != nil {
-			c.SendString("Error!")
+			//log.Fatalf("error: %v", err)
+			return c.JSON(fiber.Map{
+				"status": "err",
+			})
 		}
 		return c.SendString(record.Country.IsoCode)
+	})
+
+	app.Get("/:ip", func(c *fiber.Ctx) error {
+		ip := net.ParseIP(c.Params("ip"))
+		record, err := db.City(ip)
+		if err != nil {
+			//log.Fatalf("error: %v", err)
+			return c.JSON(fiber.Map{
+				"status": "err",
+			})
+		}
+		dataIP := IPstruct{
+			IP:            fmt.Sprintf("%v", ip),
+			City:          record.City.Names["en"],
+			Region:        record.City.Names["en"],
+			Country:       record.Country.IsoCode,
+			CountryFull:   record.Country.Names["en"],
+			Continent:     record.Continent.Code,
+			ContinentFull: record.Continent.Names["en"],
+			Loc:           fmt.Sprintf("%v,%v", record.Location.Latitude, record.Location.Longitude),
+			Postal:        record.Postal.Code,
+		}
+		return c.JSON(dataIP)
 	})
 
 	log.Fatal(app.Listen(":3000"))
