@@ -2,50 +2,16 @@ package main
 
 import (
 	"fmt"
+	"gopi/models"
+	"gopi/handlers"
+	"gopi/data"
 	"log"
 	"net"
-	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/oschwald/geoip2-golang"
 )
 
-type IPstruct struct {
-	IP            string `json:"ip"`
-	City          string `json:"city"`
-	Region        string `json:"region"`
-	Country       string `json:"country"`
-	CountryFull   string `json:"country_full"`
-	Continent     string `json:"continent"`
-	ContinentFull string `json:"continent_full"`
-	Loc           string `json:"loc"`
-	Postal        string `json:"postal"`
-}
-
-//Add Test
-func getUserIP(c *fiber.Ctx) error {
-   	var userIP string
-   	if len(c.GetRespHeader("CF-Connecting-IP")) > 1 {
-        	userIP = c.GetRespHeader("CF-Connecting-IP")
-        	fmt.Println("Cloudflare check", net.ParseIP(userIP))
-    	} else if len(c.GetRespHeader("X-Forwarded-For")) > 1 {
-        	userIP = c.GetRespHeader("X-Forwarded-For")
-        	fmt.Println("Forwarded for", net.ParseIP(userIP))
-    	} else if len(c.GetRespHeader("X-Real-IP")) > 1 {
-        	userIP = c.GetRespHeader("X-Real-IP")
-        	fmt.Println("Real IP", net.ParseIP(userIP))
-    	} else {
-        	userIP = c.IP()
-        	if strings.Contains(userIP, ":") {
-            		fmt.Println("Natural IP6", net.ParseIP(strings.Split(userIP, ":")[0]))
-        	} else {
-            		fmt.Println("Natural IP", net.ParseIP(userIP))
-        	}
- 	}
-	return c.JSON(fiber.Map{
-		"ip": net.ParseIP(userIP),
-	})
-}
+const DBIpGeo = "data/GeoIP2-City.mmdb"
 
 func main() {
 	//Add config for connecting to CF IP
@@ -54,21 +20,18 @@ func main() {
 		//EnableTrustedProxyCheck: true,
 		//TrustedProxies: []string{"0.0.0.0"},
 	})
-	//Get the DB
-	db, err := geoip2.Open("data/GeoIP2-City.mmdb")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
 
-	// Test routes
-	app.Get("/test", getUserIP)
+	//DBGet
+	ConnectDB := dbmaxmind.GetDB(DBIpGeo)
+	defer ConnectDB.Close()
+	// Test route
+	app.Get("/test", handlers.GetUserIP)
 
 	// Main routes
 	app.Get("/", func(c *fiber.Ctx) error {
 		getclientIP := c.IP()
 		ip := net.ParseIP(getclientIP)
-		record, err := db.City(ip)
+		record, err := ConnectDB.City(ip)
 		if err != nil {
 			fmt.Printf("error: %v", err)
 			return c.JSON(fiber.Map{
@@ -77,7 +40,7 @@ func main() {
 		}
 		//Logger
 		fmt.Printf("%v\n", ip)
-		dataIP := IPstruct{
+		dataIP := models.IpData{
 			IP:            fmt.Sprintf("%v", ip),
 			City:          record.City.Names["en"],
 			Region:        record.City.Names["en"],
@@ -93,7 +56,7 @@ func main() {
 
 	app.Get("/:ip/country", func(c *fiber.Ctx) error {
 		ip := net.ParseIP(c.Params("ip"))
-		record, err := db.Country(ip)
+		record, err := ConnectDB.Country(ip)
 		if err != nil {
 			//log.Fatalf("error: %v", err)
 			return c.JSON(fiber.Map{
@@ -105,14 +68,14 @@ func main() {
 
 	app.Get("/:ip", func(c *fiber.Ctx) error {
 		ip := net.ParseIP(c.Params("ip"))
-		record, err := db.City(ip)
+		record, err := ConnectDB.City(ip)
 		if err != nil {
 			fmt.Printf("error: %v\n", err)
 			return c.JSON(fiber.Map{
 				"status": "err",
 			})
 		}
-		dataIP := IPstruct{
+		dataIP := models.IpData{
 			IP:            fmt.Sprintf("%v", ip),
 			City:          record.City.Names["en"],
 			Region:        record.City.Names["en"],
