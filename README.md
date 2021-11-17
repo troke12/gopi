@@ -1,10 +1,15 @@
-# gopi
-Simple API to get information from your IP Address
+<p align="center">
+  <a href="https://github.com/troke12/gopi" target="blank"><img src="https://cdn.discordapp.com/attachments/874251888357441537/910394407277182976/36606a05322a3f71c8c500a03e297fe703d6e647.png" width="200" alt="Go" /></a>
 
-# Idea
+</p>
+
+<h1 align="center">Gopi</h1>
+<p align="center">Simple API for get geo information about your IP Address or other IP</p>
+
+### Idea
 This idea come from [IP zxq](https://ip.zxq.co) and literaly i clone it
 
-# How to download GeoIP2 ?
+### How to download GeoIP2 ?
 Remember to change `YOUR_LICENSE_KEY` , you can obtain [here](https://www.maxmind.com/en/account)
 
 ```bash
@@ -13,12 +18,12 @@ tar -zxvf geoip.tar.gz
 mv geoip.tar.gz data
 ```
 
-# Routes
+### Routes
 - `/` - get your current information
 - `/8.8.8.8/country` - get the country iso code
 - `/8.8.8.8` - get the information another ip
 
-# Result
+### Result
 
 ```json
 {
