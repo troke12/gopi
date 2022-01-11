@@ -9,6 +9,10 @@
 ### Idea
 This idea come from [IP zxq](https://ip.zxq.co) and literaly i clone it
 
+### Demo
+
+[ip.datenshi.pw](https://ip.datenshi.pw)
+
 ### How to download GeoIP2 ?
 Remember to change `YOUR_LICENSE_KEY` , you can obtain [here](https://www.maxmind.com/en/account)
 
