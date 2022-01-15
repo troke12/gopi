@@ -1,10 +1,7 @@
 <p align="center">
-  <a href="https://github.com/troke12/gopi" target="blank"><img src="https://cdn.discordapp.com/attachments/874251888357441537/910394407277182976/36606a05322a3f71c8c500a03e297fe703d6e647.png" width="200" alt="Go" /></a>
+  <a href="https://github.com/troke12/gopi" target="blank"><img src="https://socialify.git.ci/troke12/gopi/image?description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fcdn.discordapp.com%2Fattachments%2F874251888357441537%2F910394407277182976%2F36606a05322a3f71c8c500a03e297fe703d6e647.png&name=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Dark" alt="Go" /></a>
 
 </p>
-
-<h1 align="center">Gopi</h1>
-<p align="center">Simple API for get geo information about your IP Address or other IP</p>
 
 ### Idea
 This idea come from [IP zxq](https://ip.zxq.co) and literaly i clone it
