@@ -15,7 +15,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-const DBIpGeo = "data/GeoIP2-City.mmdb"
+// DB maxmind location
+var DBIpGeo = os.Getenv("PATH")
 
 func GetUserIPTest(c *fiber.Ctx) error {
 	var userIP string
@@ -80,7 +81,7 @@ func GetCountry(c *fiber.Ctx) error {
 }
 
 func GetAnotherIP(c *fiber.Ctx) error {
-	if strings.Contains(":", c.Params("ip")) {
+	if strings.Contains(c.Params("ip"), ":") {
 		var ipAddress string = c.Params("ip")
 		v6 := net.ParseIP(ipAddress)
 		baseUrl := fmt.Sprintf("https://api.freegeoip.app/json/%v?apikey=%v", v6, os.Getenv("API_KEY"))
@@ -100,9 +101,19 @@ func GetAnotherIP(c *fiber.Ctx) error {
 		if err := json.Unmarshal(body, &dataFree); err != nil {
 			fmt.Println("Error")
 		}
-		return c.SendString(dataFree.IP)
+		webIP := local.IpData{
+			IP:				fmt.Sprintf("%v", ipAddress),
+			City:          	dataFree.City,
+			Region:        	dataFree.RegionName,
+			Country:       	dataFree.CountryCode,
+			CountryFull:   	dataFree.CountryName,
+			Continent:     	dataFree.RegionCode,
+			ContinentFull: 	dataFree.RegionName,
+			Loc:           	fmt.Sprintf("%v,%v", dataFree.Latitude, dataFree.Longitude),
+			Postal:        	dataFree.ZipCode,
+		}
+		return c.JSON(webIP)
 	} else {
-		fmt.Println("ipv4")
 		asu := net.ParseIP(c.Params("ip"))
 		record, err := dbmaxmind.GetDB(DBIpGeo).City(asu)
 		if err != nil {
