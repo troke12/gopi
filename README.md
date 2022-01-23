@@ -3,15 +3,15 @@
 
 </p>
 
-### Idea
-This idea come from [IP zxq](https://ip.zxq.co) and literaly i clone it
+<h2 align="center"><a href="https://ip.datenshi.pw">Demo</a></h1>
 
-### Demo
+## Idea
+This idea come from [IP zxq](https://ip.zxq.co) and literaly i clone it, also already used for my project.
 
-[ip.datenshi.pw](https://ip.datenshi.pw)
+## Download GeoIP2Lite Database
+First of all, we need to download the database from Maxmind and below you can use this to download the db and remember to change `YOUR_LICENSE_KEY` 
 
-### How to download GeoIP2 ?
-Remember to change `YOUR_LICENSE_KEY` , you can obtain [here](https://www.maxmind.com/en/account)
+You can obtain LICENSE KEY [here](https://www.maxmind.com/en/account)
 
 ```bash
 wget -O geoip.tar.gz "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=YOUR_LICENSE_KEY&suffix=tar.gz"
@@ -19,12 +19,21 @@ tar -zxvf geoip.tar.gz
 mv geoip.tar.gz data
 ```
 
-### Routes
+## Development
+
+```
+git clone https://github.com/troke12/gopi
+cd gopi
+go build
+./gopi
+```
+
+## Routes
 - `/` - get your current information
 - `/8.8.8.8/country` - get the country iso code
 - `/8.8.8.8` - get the information another ip
 
-### Result
+## Result
 
 ```json
 {
