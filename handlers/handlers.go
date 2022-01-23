@@ -16,7 +16,7 @@ import (
 )
 
 // DB maxmind location
-var DBIpGeo = os.Getenv("PATH")
+var DBIpGeo = "data/GeoIP2-City.mmdb"
 
 func GetUserIPTest(c *fiber.Ctx) error {
 	var userIP string
