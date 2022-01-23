@@ -1,4 +1,4 @@
-package models
+package local
 
 type IpData struct {
 	IP            string `json:"ip"`

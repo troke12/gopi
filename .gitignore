@@ -2,3 +2,4 @@
 data/*.mmdb
 data/*.txt
 gopi
+.env

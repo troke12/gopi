@@ -3,11 +3,17 @@ package main
 import (
 	"gopi/handlers"
 	"log"
+	"github.com/joho/godotenv"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
+
+	err := godotenv.Load()
+  	if err != nil {
+    	log.Fatal("Error loading .env file")
+  	}
 	//Add config for connecting to CF IP
 	app := fiber.New(fiber.Config{
 		ProxyHeader: "CF-Connecting-IP",

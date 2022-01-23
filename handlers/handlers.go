@@ -3,9 +3,14 @@ package handlers
 import (
 	"fmt"
 	"net"
-	"strings"
-	"gopi/models"
+	"net/http"
+	"encoding/json"
+	"io/ioutil"
 	"gopi/data"
+	"gopi/models/local"
+	"gopi/models/web"
+	"strings"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -48,7 +53,7 @@ func GetCurrentIP(c *fiber.Ctx) error {
 	}
 	//Logger
 	fmt.Printf("%v\n", ip)
-	dataIP := models.IpData{
+	dataIP := local.IpData{
 		IP:            fmt.Sprintf("%v", ip),
 		City:          record.City.Names["en"],
 		Region:        record.City.Names["en"],
@@ -75,24 +80,50 @@ func GetCountry(c *fiber.Ctx) error {
 }
 
 func GetAnotherIP(c *fiber.Ctx) error {
-	ip := net.ParseIP(c.Params("ip"))
-	record, err := dbmaxmind.GetDB(DBIpGeo).City(ip)
-	if err != nil {
-		fmt.Printf("error: %v\n", err)
-		return c.JSON(fiber.Map{
-			"status": "err",
-		})
+	if strings.Contains(".", c.Params("ip")) {
+		fmt.Println("ipv4")
+		asu := net.ParseIP(c.Params("ip"))
+		record, err := dbmaxmind.GetDB(DBIpGeo).City(asu)
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+			return c.JSON(fiber.Map{
+				"status": "err",
+			})
+		}
+		dataIP := local.IpData{
+			IP:            fmt.Sprintf("%v", asu),
+			City:          record.City.Names["en"],
+			Region:        record.City.Names["en"],
+			Country:       record.Country.IsoCode,
+			CountryFull:   record.Country.Names["en"],
+			Continent:     record.Continent.Code,
+			ContinentFull: record.Continent.Names["en"],
+			Loc:           fmt.Sprintf("%v,%v", record.Location.Latitude, record.Location.Longitude),
+			Postal:        record.Postal.Code,
+		}
+		return c.JSON(dataIP)
 	}
-	dataIP := models.IpData{
-		IP:            fmt.Sprintf("%v", ip),
-		City:          record.City.Names["en"],
-		Region:        record.City.Names["en"],
-		Country:       record.Country.IsoCode,
-		CountryFull:   record.Country.Names["en"],
-		Continent:     record.Continent.Code,
-		ContinentFull: record.Continent.Names["en"],
-		Loc:           fmt.Sprintf("%v,%v", record.Location.Latitude, record.Location.Longitude),
-		Postal:        record.Postal.Code,
+	if strings.Contains(":", c.Params("ip")) {
+		var ipAddress string = c.Params("ip")
+		v6 := net.ParseIP(ipAddress)
+		baseUrl := fmt.Sprintf("https://api.freegeoip.app/json/%v?apikey=%v", v6, os.Getenv("API_KEY"))
+
+		res, err := http.Get(baseUrl)
+		if err != nil {
+			fmt.Println("error cuy")
+		}
+		defer res.Body.Close()
+		body, err := ioutil.ReadAll(res.Body)
+
+		if err != nil {
+			fmt.Println("No response from request")
+		}
+
+		var dataFree web.IpFG
+		if err := json.Unmarshal(body, &dataFree); err != nil {
+			fmt.Println("Error")
+		}
+		return c.SendString(dataFree.IP)
 	}
-	return c.JSON(dataIP)
+	return c.SendString("Err")
 }
