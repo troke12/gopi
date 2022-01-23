@@ -80,7 +80,28 @@ func GetCountry(c *fiber.Ctx) error {
 }
 
 func GetAnotherIP(c *fiber.Ctx) error {
-	if strings.Contains(".", c.Params("ip")) {
+	if strings.Contains(":", c.Params("ip")) {
+		var ipAddress string = c.Params("ip")
+		v6 := net.ParseIP(ipAddress)
+		baseUrl := fmt.Sprintf("https://api.freegeoip.app/json/%v?apikey=%v", v6, os.Getenv("API_KEY"))
+
+		res, err := http.Get(baseUrl)
+		if err != nil {
+			fmt.Println("error cuy")
+		}
+		defer res.Body.Close()
+		body, err := ioutil.ReadAll(res.Body)
+
+		if err != nil {
+			fmt.Println("No response from request")
+		}
+
+		var dataFree web.IpFG
+		if err := json.Unmarshal(body, &dataFree); err != nil {
+			fmt.Println("Error")
+		}
+		return c.SendString(dataFree.IP)
+	} else {
 		fmt.Println("ipv4")
 		asu := net.ParseIP(c.Params("ip"))
 		record, err := dbmaxmind.GetDB(DBIpGeo).City(asu)
@@ -103,27 +124,4 @@ func GetAnotherIP(c *fiber.Ctx) error {
 		}
 		return c.JSON(dataIP)
 	}
-	if strings.Contains(":", c.Params("ip")) {
-		var ipAddress string = c.Params("ip")
-		v6 := net.ParseIP(ipAddress)
-		baseUrl := fmt.Sprintf("https://api.freegeoip.app/json/%v?apikey=%v", v6, os.Getenv("API_KEY"))
-
-		res, err := http.Get(baseUrl)
-		if err != nil {
-			fmt.Println("error cuy")
-		}
-		defer res.Body.Close()
-		body, err := ioutil.ReadAll(res.Body)
-
-		if err != nil {
-			fmt.Println("No response from request")
-		}
-
-		var dataFree web.IpFG
-		if err := json.Unmarshal(body, &dataFree); err != nil {
-			fmt.Println("Error")
-		}
-		return c.SendString(dataFree.IP)
-	}
-	return c.SendString("Err")
 }
