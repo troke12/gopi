@@ -69,15 +69,49 @@ func GetCurrentIP(c *fiber.Ctx) error {
 }
 
 func GetCountry(c *fiber.Ctx) error {
-	ip := net.ParseIP(c.Params("ip"))
-	record, err := dbmaxmind.GetDB(DBIpGeo).Country(ip)
-	if err != nil {
-		//log.Fatalf("error: %v", err)
-		return c.JSON(fiber.Map{
-			"status": "err",
-		})
+	if strings.Contains(c.Params("ip"), ":") {
+		var ipAddress string = c.Params("ip")
+		v6 := net.ParseIP(ipAddress)
+		baseUrl := fmt.Sprintf("https://api.freegeoip.app/json/%v?apikey=%v", v6, os.Getenv("API_KEY"))
+
+		res, err := http.Get(baseUrl)
+		if err != nil {
+			fmt.Println("error cuy")
+		}
+		defer res.Body.Close()
+		body, err := ioutil.ReadAll(res.Body)
+
+		if err != nil {
+			fmt.Println("No response from request")
+		}
+
+		var dataFree web.IpFG
+		if err := json.Unmarshal(body, &dataFree); err != nil {
+			fmt.Println("Error")
+		}
+		webIP := local.IpData{
+			IP:				fmt.Sprintf("%v", ipAddress),
+			City:          	dataFree.City,
+			Region:        	dataFree.RegionName,
+			Country:       	dataFree.CountryCode,
+			CountryFull:   	dataFree.CountryName,
+			Continent:     	dataFree.RegionCode,
+			ContinentFull: 	dataFree.RegionName,
+			Loc:           	fmt.Sprintf("%v,%v", dataFree.Latitude, dataFree.Longitude),
+			Postal:        	dataFree.ZipCode,
+		}
+		return c.SendString(webIP.Country)
+	} else {
+		ip := net.ParseIP(c.Params("ip"))
+		record, err := dbmaxmind.GetDB(DBIpGeo).Country(ip)
+		if err != nil {
+			//log.Fatalf("error: %v", err)
+			return c.JSON(fiber.Map{
+				"status": "err",
+			})
+		}
+		return c.SendString(record.Country.IsoCode)
 	}
-	return c.SendString(record.Country.IsoCode)
 }
 
 func GetAnotherIP(c *fiber.Ctx) error {
@@ -114,16 +148,16 @@ func GetAnotherIP(c *fiber.Ctx) error {
 		}
 		return c.JSON(webIP)
 	} else {
-		asu := net.ParseIP(c.Params("ip"))
-		record, err := dbmaxmind.GetDB(DBIpGeo).City(asu)
+		ipv4 := net.ParseIP(c.Params("ip"))
+		record, err := dbmaxmind.GetDB(DBIpGeo).City(ipv4)
 		if err != nil {
-			fmt.Printf("error: %v\n", err)
+			//fmt.Printf("error: %v\n", err)
 			return c.JSON(fiber.Map{
 				"status": "err",
 			})
 		}
 		dataIP := local.IpData{
-			IP:            fmt.Sprintf("%v", asu),
+			IP:            fmt.Sprintf("%v", ipv4),
 			City:          record.City.Names["en"],
 			Region:        record.City.Names["en"],
 			Country:       record.Country.IsoCode,
