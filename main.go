@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gopi/handlers"
+	"github.com/troke12/gopi/handlers"
 	"log"
 	"github.com/joho/godotenv"
 
