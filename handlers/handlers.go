@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"encoding/json"
 	"io/ioutil"
-	"gopi/data"
-	"gopi/models/local"
-	"gopi/models/web"
+	"github.com/troke12/gopi/data"
+	"github.com/troke12/gopi/models/local"
+	"github.com/troke12/gopi/models/web"
 	"strings"
 	"os"
 
