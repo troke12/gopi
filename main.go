@@ -4,7 +4,7 @@ import (
 	"github.com/troke12/gopi/handlers"
 	"log"
 	"github.com/joho/godotenv"
-
+	"os"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -31,5 +31,5 @@ func main() {
 
 	app.Get("/:ip", handlers.GetAnotherIP)
 
-	log.Fatal(app.Listen(":3045"))
+	log.Fatal(app.Listen(os.Getenv("PORT")))
 }
