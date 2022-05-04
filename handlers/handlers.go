@@ -43,12 +43,13 @@ func GetUserIPTest(c *fiber.Ctx) error {
 	})
 }
 
+// Getting current ip in main route
 func GetCurrentIP(c *fiber.Ctx) error {
 	getclientIP := c.IP()
 	ip := net.ParseIP(getclientIP)
 	record, err := dbmaxmind.GetDB(DBIpGeo).City(ip)
 	if err != nil {
-		fmt.Printf("error: %v", err)
+		fmt.Printf("error: %v\n", err)
 		return c.JSON(fiber.Map{
 			"status": "err",
 		})
@@ -91,15 +92,7 @@ func GetCountry(c *fiber.Ctx) error {
 			fmt.Println("Error")
 		}
 		webIP := local.IpData{
-			IP:				fmt.Sprintf("%v", ipAddress),
-			City:          	dataFree.City,
-			Region:        	dataFree.RegionName,
 			Country:       	dataFree.CountryCode,
-			CountryFull:   	dataFree.CountryName,
-			Continent:     	dataFree.RegionCode,
-			ContinentFull: 	dataFree.RegionName,
-			Loc:           	fmt.Sprintf("%v,%v", dataFree.Latitude, dataFree.Longitude),
-			Postal:        	dataFree.ZipCode,
 		}
 		return c.SendString(webIP.Country)
 	} else {

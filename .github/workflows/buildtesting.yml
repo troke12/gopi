@@ -9,8 +9,12 @@ jobs:
     name: Building in golang version ${{ matrix.go }} 
     steps:
       - uses: actions/checkout@v2
+        # Unit Build
       - name: Building Go
         uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go }}
       - run: go build
+        # Unit Test
+      - name: Testing Go
+        run: go test
