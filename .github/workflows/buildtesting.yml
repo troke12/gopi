@@ -4,22 +4,18 @@ on: [push, pull_request]
 jobs:
   
   build:
-    # Always run on ubuntu
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-        # Setup Golang
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
 
-        # Build Golang
       - name: Build Go
       - run: go build -v
 
-        # Unit Test
       - name: Testing Go
         run: go test -v

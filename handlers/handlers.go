@@ -1,17 +1,18 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
-	"encoding/json"
-	"io/ioutil"
+	"os"
+	"strings"
+
 	"github.com/troke12/gopi/data"
 	"github.com/troke12/gopi/models/local"
 	"github.com/troke12/gopi/models/web"
-	"strings"
-	"os"
-
+	"github.com/rollbar/rollbar-go"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -49,7 +50,8 @@ func GetCurrentIP(c *fiber.Ctx) error {
 	ip := net.ParseIP(getclientIP)
 	record, err := dbmaxmind.GetDB(DBIpGeo).City(ip)
 	if err != nil {
-		fmt.Printf("error: %v\n", err)
+		//fmt.Printf("error: %v\n", err)
+		rollbar.Error(err)
 		return c.JSON(fiber.Map{
 			"status": "err",
 		})
@@ -78,17 +80,20 @@ func GetCountry(c *fiber.Ctx) error {
 
 		res, err := http.Get(baseUrl)
 		if err != nil {
+			rollbar.Error(err)
 			fmt.Println("error cuy")
 		}
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
 
 		if err != nil {
+			rollbar.Error(err)
 			fmt.Println("No response from request")
 		}
 
 		var dataFree web.IpFG
 		if err := json.Unmarshal(body, &dataFree); err != nil {
+			rollbar.Error(err)
 			fmt.Println("Error")
 		}
 		webIP := local.IpData{
@@ -99,7 +104,7 @@ func GetCountry(c *fiber.Ctx) error {
 		ip := net.ParseIP(c.Params("ip"))
 		record, err := dbmaxmind.GetDB(DBIpGeo).Country(ip)
 		if err != nil {
-			//log.Fatalf("error: %v", err)
+			rollbar.Error(err)
 			return c.JSON(fiber.Map{
 				"status": "err",
 			})
@@ -113,20 +118,22 @@ func GetAnotherIP(c *fiber.Ctx) error {
 		var ipAddress string = c.Params("ip")
 		v6 := net.ParseIP(ipAddress)
 		baseUrl := fmt.Sprintf("https://api.freegeoip.app/json/%v?apikey=%v", v6, os.Getenv("API_KEY"))
-
 		res, err := http.Get(baseUrl)
 		if err != nil {
+			rollbar.Error(err)
 			fmt.Println("error cuy")
 		}
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
 
 		if err != nil {
+			rollbar.Error(err)
 			fmt.Println("No response from request")
 		}
 
 		var dataFree web.IpFG
 		if err := json.Unmarshal(body, &dataFree); err != nil {
+			rollbar.Error(err)
 			fmt.Println("Error")
 		}
 		webIP := local.IpData{
@@ -145,7 +152,7 @@ func GetAnotherIP(c *fiber.Ctx) error {
 		ipv4 := net.ParseIP(c.Params("ip"))
 		record, err := dbmaxmind.GetDB(DBIpGeo).City(ipv4)
 		if err != nil {
-			//fmt.Printf("error: %v\n", err)
+			rollbar.Error(err)
 			return c.JSON(fiber.Map{
 				"status": "err",
 			})
