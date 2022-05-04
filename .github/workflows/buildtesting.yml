@@ -1,20 +1,25 @@
-name: Build Passing
+name: Build & Test
 on: [push, pull_request]
+
 jobs:
+  
   build:
+    # Always run on ubuntu
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go: [ '1.16' ]
-    name: Building in golang version ${{ matrix.go }} 
+
     steps:
       - uses: actions/checkout@v2
-        # Unit Build
-      - name: Building Go
-        uses: actions/setup-go@v1
+
+        # Setup Golang
+      - name: Setup Go
+        uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.go }}
-      - run: go build
+          go-version: 1.16
+
+        # Build Golang
+      - name: Build Go
+      - run: go build -v
+
         # Unit Test
       - name: Testing Go
-        run: go test
+        run: go test -v
