@@ -18,6 +18,7 @@ import (
 // DB maxmind location
 var DBIpGeo = "data/GeoIP2-City.mmdb"
 
+// This test function for checking Cloudflare or another Header
 func GetUserIPTest(c *fiber.Ctx) error {
 	var userIP string
 	if len(c.GetRespHeader("CF-Connecting-IP")) > 1 {

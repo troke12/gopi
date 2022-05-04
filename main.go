@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-
+	// Load environment
 	err := godotenv.Load()
   	if err != nil {
     	log.Fatal("Error loading .env file")
@@ -24,12 +24,15 @@ func main() {
 	// Test route
 	app.Get("/test", handlers.GetUserIPTest)
 
-	// Main routes
+	// Main route
 	app.Get("/", handlers.GetCurrentIP)
-
+	
+	// Getting country
 	app.Get("/:ip/country", handlers.GetCountry)
 
+	// Request another IP
 	app.Get("/:ip", handlers.GetAnotherIP)
 
+	// Port
 	log.Fatal(app.Listen(os.Getenv("PORT")))
 }
