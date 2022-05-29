@@ -28,7 +28,7 @@ func main() {
 	})
 
 	// Test route
-	app.Get("/test", handlers.GetUserIPTest)
+	//app.Get("/test", handlers.GetUserIPTest)
 
 	// Main route
 	app.Get("/", handlers.GetCurrentIP)
@@ -40,6 +40,7 @@ func main() {
 
 	// Request another IP
 	app.Get("/:ip", handlers.GetAnotherIP)
+	rollbar.WrapAndWait(handlers.GetAnotherIP)
 
 	// Port
 	log.Fatal(app.Listen(os.Getenv("PORT")))

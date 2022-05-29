@@ -72,6 +72,7 @@ func GetCurrentIP(c *fiber.Ctx) error {
 	return c.JSON(dataIP)
 }
 
+// Only to get CountryISOCode
 func GetCountry(c *fiber.Ctx) error {
 	if strings.Contains(c.Params("ip"), ":") {
 		var ipAddress string = c.Params("ip")
@@ -114,6 +115,9 @@ func GetCountry(c *fiber.Ctx) error {
 }
 
 func GetAnotherIP(c *fiber.Ctx) error {
+	//Checking if IP it's IPV6 version, checking with ":"
+	//Maxmind are not really compatible with ipv6, so that's why we need to fetch from others third-party (freegeoip.app)
+	//FreegeoIP it's really best site that has free plan with much request in it, so it's recommended to make the account first
 	if strings.Contains(c.Params("ip"), ":") {
 		var ipAddress string = c.Params("ip")
 		v6 := net.ParseIP(ipAddress)
@@ -137,7 +141,7 @@ func GetAnotherIP(c *fiber.Ctx) error {
 			fmt.Println("Error")
 		}
 		webIP := local.IpData{
-			IP:				fmt.Sprintf("%v", ipAddress),
+			IP:		fmt.Sprintf("%v", ipAddress),
 			City:          	dataFree.City,
 			Region:        	dataFree.RegionName,
 			Country:       	dataFree.CountryCode,
@@ -149,6 +153,7 @@ func GetAnotherIP(c *fiber.Ctx) error {
 		}
 		return c.JSON(webIP)
 	} else {
+		//This is checking for ipv4
 		ipv4 := net.ParseIP(c.Params("ip"))
 		record, err := dbmaxmind.GetDB(DBIpGeo).City(ipv4)
 		if err != nil {
