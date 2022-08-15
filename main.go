@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/troke12/gopi/handlers"
 	"log"
-	"github.com/joho/godotenv"
 	"os"
 	"github.com/gofiber/fiber/v2"
 	"github.com/goccy/go-json"
@@ -11,11 +10,6 @@ import (
 )
 
 func main() {
-	// Load environment
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 	// Rollbar
 	rollbar.SetToken(os.Getenv("ROLLBAR_TOKEN"))
 	//Add config for connecting to CF IP

@@ -24,9 +24,19 @@ mv geoip.tar.gz data
 ```
 git clone https://github.com/troke12/gopi
 cd gopi
+cp .env.example .env
 go build
 ./gopi
 ```
+
+## Docker
+If you want to use docker just add some build-arg in build docker
+```
+docker build --build-arg LICENSEY_KEY=LICENSEY_KEY --build-arg API_FGIP=API_FREEGEOIP --build-arg PORT="localhost:3045" --build-arg ROLLBARTOKEN=ROLLBAR_TOKEN . -t gopi
+
+docker run -d p 3045:3045 --name gopi gopi
+```
+It will automatically download the latest MaxMindDB and extract it to the `data` folder
 
 ## Routes
 - `/` - get your current information
