@@ -1,6 +1,6 @@
 #!/bin/sh
 # This script is function to download maxminddb
-. config/maxmind.config
+. docker-config/maxmind.config
 
 # DOWNLOAD DIRECTLY TO MAXMIND
 wget -O geoip.tar.gz "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key=$licensekey&suffix=tar.gz"
