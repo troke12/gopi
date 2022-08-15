@@ -19,7 +19,7 @@ ENV PORT=${PORT}
 ENV ROLLBAR_TOKEN=${ROLLBARTOKEN}
 
 RUN go build -o /app/gopi
-RUN echo "export licensekey=${LICENSEY_KEY}" >> /app/config/maxmind.config
+RUN echo "export licensekey=${LICENSEY_KEY}" >> /app/docker-config/maxmind.config
 EXPOSE 3045
 
 CMD ["sh", "start.sh"]
