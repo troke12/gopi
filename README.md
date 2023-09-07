@@ -1,7 +1,5 @@
-<p align="center">
-  <a href="https://github.com/troke12/gopi" target="blank"><img src="https://socialify.git.ci/troke12/gopi/image?description=1&font=KoHo&forks=1&issues=1&logo=https%3A%2F%2Fcdn.discordapp.com%2Fattachments%2F874251888357441537%2F910394407277182976%2F36606a05322a3f71c8c500a03e297fe703d6e647.png&name=1&pattern=Floating%20Cogs&pulls=1&stargazers=1&theme=Dark" alt="Go" /></a>
 
-</p>
+![gopi](https://github.com/troke12/gopi/assets/10250068/89ceea57-f91d-4aee-8eb7-b92acc804727)
 
 <h2 align="center"><a href="https://ip.datenshi.pw">Demo</a></h1>
 
